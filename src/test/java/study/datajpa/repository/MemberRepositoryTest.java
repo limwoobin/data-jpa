@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.entity.Member;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Transactional
 public class MemberRepositoryTest {
@@ -19,5 +21,8 @@ public class MemberRepositoryTest {
         Member savedMember = memberRepository.save(member);
 
         Member findMember = memberRepository.findById(savedMember.getId()).get();
+        assertThat(findMember.getId()).isEqualTo(member.getId());
+        assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
+        assertThat(findMember).isEqualTo(member);
     }
 }
