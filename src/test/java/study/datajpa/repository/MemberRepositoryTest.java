@@ -244,12 +244,40 @@ public class MemberRepositoryTest {
 //        List<Member> members = memberRepository.findMemberFetchJoin();
         List<Member> members = memberRepository.findAll();
 
+        // then
         for (Member member : members) {
             System.out.println("member = " + member.getUsername());
             System.out.println(member.getTeam().getClass());
             System.out.println("member.team = " + member.getTeam().getName());
         }
+    }
 
-        // then
+    @Test
+    public void queryHint() {
+        // given
+        Member member = new Member("member1" , 10);
+        memberRepository.save(member);
+        em.flush();
+        em.clear();
+
+        // when
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+    }
+
+    @Test
+    public void lock() {
+        // given
+        Member member = new Member("member1" , 10);
+        memberRepository.save(member);
+        em.flush();
+        em.clear();
+
+        // when
+        List<Member> result = memberRepository.findLockByUsername("member1");
+
+        em.flush();
     }
 }
