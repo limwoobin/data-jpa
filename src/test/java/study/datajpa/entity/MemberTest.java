@@ -76,4 +76,10 @@ class MemberTest {
         System.out.println("findMember.getLastModifiedBy() = " + findMember.getLastModifiedBy());
     }
 
+    @Test
+    public void debugTest() {
+        String val = "AA";
+        val += 3;
+        val +=5;
+    }
 }
