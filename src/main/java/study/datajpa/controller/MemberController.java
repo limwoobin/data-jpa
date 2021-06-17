@@ -34,9 +34,4 @@ public class MemberController {
         Page<Member> page = memberRepository.findAll(pageable);
         return page.map(member -> new MemberDto(member.getId(), member.getUsername() , member.getTeam().getName()));
     }
-
-    @PostConstruct
-    public void init() {
-        memberRepository.save(new Member("userA"));
-    }
 }
