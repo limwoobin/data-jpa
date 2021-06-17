@@ -53,4 +53,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> , MemberRe
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Member> findLockByUsername(String username);
+
+//    List<UsernameOnly> findByUsername(String username);
+
+    <T> List<T> findByUsername(String username , Class<T> type);
 }
