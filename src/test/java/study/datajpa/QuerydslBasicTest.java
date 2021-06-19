@@ -2,6 +2,7 @@ package study.datajpa;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.datajpa.dto.DSLMemberDto;
+import study.datajpa.dto.UserDto;
 import study.datajpa.entity.Member;
 import static study.datajpa.entity.QMember.member;
 import static study.datajpa.entity.QTeam.team;
@@ -464,6 +467,116 @@ public class QuerydslBasicTest {
         for (String s : result) {
             System.out.println("s = " + s);
 
+        }
+    }
+
+    @Test
+    public void simpleProjection() {
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println("s = " + s);
+        }
+    }
+
+    @Test
+    public void tupleProjection() {
+        List<Tuple> result = queryFactory
+                .select(member.username , member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            String username = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            System.out.println("username = " + username);
+            System.out.println("age = " + age);
+        }
+    }
+
+    @Test
+    public void findDtoByJPQL() {
+        List<DSLMemberDto> result = em.createQuery("select new study.datajpa.dto.DSLMemberDto(m.username , m.age) from Member m" , DSLMemberDto.class)
+                .getResultList();
+
+        for (DSLMemberDto dslMemberDto : result) {
+            System.out.println("dslMemberDto.getUsername() = " + dslMemberDto.getUsername());
+            System.out.println("dslMemberDto.getAge() = " + dslMemberDto.getAge());
+        }
+    }
+
+    @Test
+    public void findDtoBySetter() {
+        List<DSLMemberDto> result = queryFactory
+                .select(Projections.bean(DSLMemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (DSLMemberDto dslMemberDto : result) {
+            System.out.println("dslMemberDto.getUsername() = " + dslMemberDto.getUsername());
+            System.out.println("dslMemberDto.getAge() = " + dslMemberDto.getAge());
+        }
+    }
+
+    @Test
+    public void findDtoByFiled() {
+        List<DSLMemberDto> result = queryFactory
+                .select(Projections.fields(DSLMemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (DSLMemberDto dslMemberDto : result) {
+            System.out.println("dslMemberDto.getUsername() = " + dslMemberDto.getUsername());
+            System.out.println("dslMemberDto.getAge() = " + dslMemberDto.getAge());
+        }
+    }
+
+    @Test
+    public void findUserDto() {
+//        List<UserDto> result = queryFactory
+//                .select(Projections.fields(UserDto.class,
+//                        member.username.as("name"),
+//                        member.age))
+//                .from(member)
+//                .fetch();
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<UserDto> result = queryFactory
+                .select(Projections.fields(UserDto.class,
+                        member.username.as("name"),
+                        Expressions.as(JPAExpressions
+                        .select(memberSub.age.max())
+                        .from(memberSub), "age")
+                ))
+                .from(member)
+                .fetch();
+
+        for (UserDto userDto : result) {
+            System.out.println("userDto.getName() = " + userDto.getName());
+            System.out.println("userDto.getAge() = " + userDto.getAge());
+        }
+    }
+
+    @Test
+    public void findDtoByConstructor() {
+        List<DSLMemberDto> result = queryFactory
+                .select(Projections.constructor(DSLMemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (DSLMemberDto dslMemberDto : result) {
+            System.out.println("dslMemberDto.getUsername() = " + dslMemberDto.getUsername());
+            System.out.println("dslMemberDto.getAge() = " + dslMemberDto.getAge());
         }
     }
 }
