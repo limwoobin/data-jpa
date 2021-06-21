@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.DSLMemberDto;
+import study.datajpa.dto.ProjectionMemberDto;
+import study.datajpa.dto.QProjectionMemberDto;
 import study.datajpa.dto.UserDto;
 import study.datajpa.entity.Member;
 import static study.datajpa.entity.QMember.member;
@@ -577,6 +579,18 @@ public class QuerydslBasicTest {
         for (DSLMemberDto dslMemberDto : result) {
             System.out.println("dslMemberDto.getUsername() = " + dslMemberDto.getUsername());
             System.out.println("dslMemberDto.getAge() = " + dslMemberDto.getAge());
+        }
+    }
+
+    @Test
+    public void findDtoByQueryProjection() {
+        List<ProjectionMemberDto> result = queryFactory
+                .select(new QProjectionMemberDto(member.username , member.age))
+                .from(member)
+                .fetch();
+
+        for (ProjectionMemberDto projectionMemberDto : result) {
+            System.out.println("projectionMemberDto = " + projectionMemberDto);
         }
     }
 }
