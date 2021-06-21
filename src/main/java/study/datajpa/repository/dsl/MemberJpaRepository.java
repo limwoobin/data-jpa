@@ -1,12 +1,10 @@
-package study.datajpa.repository;
+package study.datajpa.repository.dsl;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 import study.datajpa.dto.MemberSearchCondition;
 import study.datajpa.dto.MemberTeamDto;
 import study.datajpa.dto.QMemberTeamDto;

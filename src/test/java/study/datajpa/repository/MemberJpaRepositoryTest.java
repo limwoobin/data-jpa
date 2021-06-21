@@ -8,6 +8,7 @@ import study.datajpa.dto.MemberSearchCondition;
 import study.datajpa.dto.MemberTeamDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
+import study.datajpa.repository.dsl.MemberJpaRepository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
