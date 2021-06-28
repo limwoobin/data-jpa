@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.dto.MemberSearchCondition;
 import study.datajpa.dto.MemberTeamDto;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
+@Rollback(value = false)
 class MemberDslRepositoryTest {
     @Autowired
     EntityManager em;
@@ -95,5 +97,33 @@ class MemberDslRepositoryTest {
         Page<MemberTeamDto> result = memberDslRepository.searchPageSimple(condition , pageRequest);
         assertThat(result.getSize()).isEqualTo(3);
         assertThat(result).extracting("username").containsExactly("member1" , "member2" , "member3");
+    }
+
+    @Test
+    public void 쓰기_지연_테스트() {
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+        System.out.println("teamA Persist ###");
+
+        Team teamB = new Team("teamB");
+        em.persist(teamB);
+        System.out.println("teamA Persist ###");
+
+        em.flush();
+        em.clear();
+
+        Team findTeamA = em.find(Team.class, teamA.getId());
+        Team findTeamB = em.find(Team.class, teamB.getId());
+
+        System.out.println("쓰기지연 여기부터 ###");
+
+        findTeamA.setName("upt1");
+        System.out.println("Update ### 1");
+
+        findTeamB.setName("upt2");
+        System.out.println("Update ### 2");
+
+//        Team findTeamA_1 = em.find(Team.class, teamA.getId());
+//        Team findTeamB_2 = em.find(Team.class, teamB.getId());
     }
 }
