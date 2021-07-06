@@ -3,6 +3,7 @@ package study.datajpa.entity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.repository.MemberRepository;
 
@@ -11,6 +12,7 @@ import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -81,5 +83,40 @@ class MemberTest {
         String val = "AA";
         val += 3;
         val +=5;
+    }
+
+    @Test
+    public void no_transactional_insert_test() {
+        Member member = new Member("test1");
+        Member member2 = new Member("test2");
+
+        member = memberRepository.save(member);
+        member2 = memberRepository.save(member2);
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember2 = memberRepository.findById(member2.getId()).get();
+
+        assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
+        assertThat(findMember2.getUsername()).isEqualTo(member2.getUsername());
+    }
+
+    @Test
+    public void no_transactional_update_test() {
+        Member member = new Member("test1");
+        member = memberRepository.save(member);
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+        findMember.setUsername("update test");
+        memberRepository.save(findMember);
+
+        System.out.println(findMember.getUsername());
+    }
+
+    @Test
+    public void no_transactional_delete_test() {
+        Member member = new Member("test1");
+        member = memberRepository.save(member);
+
+        memberRepository.delete(member);
     }
 }
